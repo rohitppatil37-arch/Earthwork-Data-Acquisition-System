@@ -362,29 +362,43 @@ btn.innerHTML = "✅ माहिती जतन करा";
   
   try {
 
-    const res = await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" }
-    });
-
-    const result = await res.json();
-
-    if (result.result === "success" || result.status === "success" || result.success === true) {
-      alert("✅ माहिती यशस्वीरित्या जतन झाली!");
-      getEl("mainForm").reset();
-      resetMachineSection();
-      getEl("workDate").value =
-        new Date().toISOString().split("T")[0];
-      handleDieselLogic();
-    } else {
-      alert("⚠️ Server error आला.");
+  const res = await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
     }
+  });
 
-  } catch (err) {
-    console.error(err);
-    alert("❌ नेटवर्क एरर. पुन्हा प्रयत्न करा.");
+  if (!res.ok) {
+    throw new Error("Server returned " + res.status);
   }
+
+  const text = await res.text();
+  console.log("Server Response:", text);
+
+  if (text && text.toLowerCase().includes("success")) {
+
+    alert("✅ माहिती यशस्वीरित्या जतन झाली!");
+
+    getEl("mainForm").reset();
+    resetMachineSection();
+    getEl("workDate").value =
+      new Date().toISOString().split("T")[0];
+    handleDieselLogic();
+
+  } else {
+
+    alert("⚠️ Server error आला.\n" + text);
+
+  }
+
+} catch (err) {
+
+  console.error("Fetch Error:", err);
+  alert("❌ नेटवर्क एरर. पुन्हा प्रयत्न करा.");
+
+}
 
   btn.disabled = false;
 btn.innerHTML = "✅ माहिती जतन करा";
