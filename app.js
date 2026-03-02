@@ -138,6 +138,10 @@ function handleMachineTypeChange() {
   const subCode = getValue("subdivision");
   const machineType = getValue("machineType");
 
+  // 🔥 Always hide vehicle section first
+  if (getEl("vehicleSection"))
+    getEl("vehicleSection").style.display = "none";
+
   resetSelect(getEl("machineName"), "मशीन निवडा...");
   resetSelect(getEl("staffName"), "चालक / ऑपरेटर निवडा...");
 
@@ -169,9 +173,14 @@ function toggleFormFields(machineType, subCode) {
   }
 
   const machineData = CONFIG.machines.find(m =>
-    m["Subdivision Code"] === subCode &&
-    m["Machine Name"] === selectedMachine
-  );
+  m["Subdivision Code"]?.trim() === subCode?.trim() &&
+  m["Machine Name"]?.trim() === selectedMachine?.trim()
+);
+
+if (!machineData) {
+  vehicleSection.style.display = "none";
+  return;
+}
 
   const category = machineData?.Category?.trim();
 
@@ -307,8 +316,15 @@ async function handleSubmit(e) {
     remark = "⚠️ काम झाले पण डिझेल भरले नाही";
   }
 
+  // ✅ इथे घ्यायचे subdivision variables
+  const subSelect = getEl("subdivision");
+  const subCode = subSelect?.value || "";
+  const subName = subSelect?.options[subSelect.selectedIndex]?.text || "";
+
+  // ✅ आता payload तयार करायचा
   const payload = {
-    "उपविभाग": getValue("subdivision"),
+    "उपविभाग कोड": subCode,
+    "उपविभाग": subName,
     "दिनांक": getValue("workDate"),
     "कामाचा प्रकार": getValue("workType"),
     "प्रकल्पाचे नाव": getValue("projectName"),
@@ -330,7 +346,7 @@ async function handleSubmit(e) {
     "एकूण तास (shift)": getValue("totalShiftHours"),
     "टीप": remark
   };
-
+  
   try {
 
     const res = await fetch(API_URL, {
