@@ -4,43 +4,127 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>यांत्रिकी मातीकाम माहिती प्रणाली</title>
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f4f6f9;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    h2 {
+      text-align: center;
+      color: #1e3a8a;
+    }
+
+    label {
+      font-weight: 600;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .section {
+      margin-bottom: 18px;
+    }
+  </style>
 </head>
+
 <body>
 
-  <h2>यांत्रिकी मातीकाम माहिती प्रणाली</h2>
+  <h2>🚜 यांत्रिकी मातीकाम माहिती प्रणाली</h2>
 
-  <label for="subdivision">🏢 उपविभाग निवडा</label><br>
-  <select id="subdivision">
-    <option value="">उपविभाग निवडा...</option>
-  </select>
+  <form id="mainForm">
 
-  <br><br>
+    <div class="section">
+      <label for="subdivision">🏢 उपविभाग निवडा</label>
+      <select id="subdivision" required>
+        <option value="">उपविभाग निवडा...</option>
+      </select>
+    </div>
 
-  <label for="workType">🎛 कामाचा प्रकार निवडा</label><br>
-  <select id="workType">
-    <option value="">कामाचा प्रकार निवडा...</option>
-  </select>
+    <div class="section">
+      <label for="workType">🎛 कामाचा प्रकार</label>
+      <select id="workType" required>
+        <option value="">कामाचा प्रकार निवडा...</option>
+      </select>
+    </div>
 
-  <br><br>
+    <div class="section">
+      <label for="projectName">🏗 प्रकल्पाचे नाव</label>
+      <select id="projectName" required>
+        <option value="">प्रकल्प निवडा...</option>
+      </select>
+    </div>
 
-  <label for="projectName">🏗 प्रकल्पाचे नाव निवडा</label><br>
-  <select id="projectName">
-    <option value="">प्रकल्प निवडा...</option>
-  </select>
-  
-<br><br>
+    <div class="section">
+      <label for="machineType">⚙️ सयंत्राचा प्रकार</label>
+      <select id="machineType" required>
+        <option value="">सयंत्राचा प्रकार निवडा...</option>
+      </select>
+    </div>
 
-<select id="machineType">
-  <option value="">सयंत्राचा प्रकार निवडा...</option>
-</select>
+    <div class="section">
+      <label for="machineName">📋 मशीन</label>
+      <select id="machineName" required>
+        <option value="">मशीन निवडा...</option>
+      </select>
+    </div>
 
-<select id="machineName">
-  <option value="">मशीन निवडा...</option>
-</select>
+    <div class="section">
+      <label for="staffName">👷 चालक / ऑपरेटर</label>
+      <select id="staffName" required>
+        <option value="">चालक / ऑपरेटर निवडा...</option>
+      </select>
+    </div>
 
-<select id="staffName">
-  <option value="">चालक / ऑपरेटर निवडा...</option>
-</select>
+    <div class="section">
+      <label for="workDate">📅 दिनांक</label>
+      <input type="date" id="workDate" required>
+    </div>
+
+    <div class="section">
+      <label for="dieselQty">⛽ डिझेल (लिटर)</label>
+      <input type="number" id="dieselQty" required>
+    </div>
+
+    <div class="section">
+      <label for="startReading">▶️ सुरुवातीचे Reading</label>
+      <input type="number" id="startReading" required>
+    </div>
+
+    <div class="section">
+      <label for="endReading">⏹ शेवटचे Reading</label>
+      <input type="number" id="endReading" required>
+    </div>
+
+    <button type="submit">✅ माहिती जतन करा</button>
+
+  </form>
+
   <script src="config.js"></script>
   <script src="app.js"></script>
 
