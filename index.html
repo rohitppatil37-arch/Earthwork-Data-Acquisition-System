@@ -108,17 +108,17 @@
 
     <div class="section">
       <label for="dieselQty">⛽ डिझेल (लिटर)</label>
-      <input type="number" id="dieselQty" required>
+      <input type="number" id="dieselQty" min="0" step="0.1" required>
     </div>
 
     <div class="section">
       <label for="startReading">▶️ सुरुवातीचे Reading</label>
-      <input type="number" id="startReading" required>
+     <input type="number" id="startReading" min="0" required>
     </div>
 
     <div class="section">
       <label for="endReading">⏹ शेवटचे Reading</label>
-      <input type="number" id="endReading" required>
+      <input type="number" id="endReading" min="0" required>
     </div>
 
     <button type="submit">✅ माहिती जतन करा</button>
