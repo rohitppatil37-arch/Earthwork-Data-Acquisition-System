@@ -152,25 +152,23 @@ function handleMachineTypeChange() {
 
 function toggleFormFields(machineType, subCode) {
 
-  const machineSection = getEl("machineSection");
   const vehicleSection = getEl("vehicleSection");
 
-  if (!machineSection || !vehicleSection) return;
+  if (!vehicleSection) return;
 
-  // Get first matching machine type for this subdivision
   const machineData = CONFIG.machines.find(m =>
     m["Subdivision Code"] === subCode &&
     m["Machine Type"] === machineType
   );
 
-  const category = machineData?.Category;
+  const category = machineData?.Category?.trim();
 
   const isVehicle = category === "Vehicle";
 
   if (isVehicle) {
 
+    // Show only vehicle-specific fields
     vehicleSection.style.display = "block";
-    machineSection.style.display = "none";
 
     getEl("tripCount").required = true;
     getEl("locationFromTo").required = true;
@@ -178,7 +176,6 @@ function toggleFormFields(machineType, subCode) {
   } else {
 
     vehicleSection.style.display = "none";
-    machineSection.style.display = "block";
 
     getEl("tripCount").required = false;
     getEl("locationFromTo").required = false;
