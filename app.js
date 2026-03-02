@@ -286,10 +286,23 @@ async function handleSubmit(e) {
 
   e.preventDefault();
 
-  const btn = document.querySelector("button[type='submit']");
+  const btn = e.target.querySelector("button[type='submit']");
   btn.disabled = true;
-  btn.textContent = "Saving...";
+  btn.innerHTML = "⏳जतन होत आहे...";
 
+  // ✅ MOVE THIS UP
+  const subSelect = getEl("subdivision");
+  const subCode = subSelect?.value || "";
+  const subName = subSelect?.options[subSelect.selectedIndex]?.text || "";
+if (!subCode || !getValue("workType") || !getValue("projectName") ||
+    !getValue("machineType") || !getValue("machineName") ||
+    !getValue("staffName")) {
+
+  alert("❌ कृपया सर्व आवश्यक माहिती भरा.");
+  btn.disabled = false;
+  btn.innerHTML = "✅ माहिती जतन करा";
+  return;
+} 
   const start = Number(getValue("startReading")) || 0;
   const end = Number(getValue("endReading")) || 0;
 
@@ -310,15 +323,7 @@ btn.innerHTML = "✅ माहिती जतन करा";
   } else if (total > 0 && diesel === 0) {
     remark = "⚠️ काम झाले पण डिझेल भरले नाही";
   }
- if (!subCode || !getValue("workType") || !getValue("projectName") ||
-    !getValue("machineType") || !getValue("machineName") ||
-    !getValue("staffName")) {
-
-  alert("❌ कृपया सर्व आवश्यक माहिती भरा.");
-  btn.disabled = false;
-  btn.innerHTML = "✅ माहिती जतन करा";
-  return;
-} 
+ 
 if (getEl("vehicleSection")?.style.display === "block") {
   if (!getValue("tripCount") || !getValue("locationFromTo")) {
     alert("❌ वाहनासाठी ट्रिप्स व स्थान माहिती आवश्यक आहे.");
@@ -327,10 +332,7 @@ btn.innerHTML = "✅ माहिती जतन करा";
     return;
   }
 }
-  // ✅ इथे घ्यायचे subdivision variables
-  const subSelect = getEl("subdivision");
-  const subCode = subSelect?.value || "";
-  const subName = subSelect?.options[subSelect.selectedIndex]?.text || "";
+  
 
   // ✅ आता payload तयार करायचा
   const payload = {
