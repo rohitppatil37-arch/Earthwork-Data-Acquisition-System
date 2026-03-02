@@ -365,7 +365,7 @@ btn.innerHTML = "✅ माहिती जतन करा";
     const res = await fetch(API_URL, {
       method: "POST",
       body: JSON.stringify(payload),
-      headers: { "Content-Type": "text/plain;charset=utf-8" }
+      headers: { "Content-Type": "application/json" }
     });
 
     const result = await res.json();
