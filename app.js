@@ -147,36 +147,36 @@ function handleMachineTypeChange() {
   );
 
   populateStaff(subCode, machineType);
-  toggleFormFields(machineType);
+  toggleFormFields(machineType, subCode);
 }
 
-function toggleFormFields(machineType) {
+function toggleFormFields(machineType, subCode) {
 
   const machineSection = getEl("machineSection");
   const vehicleSection = getEl("vehicleSection");
 
   if (!machineSection || !vehicleSection) return;
 
-  const type = machineType.trim().toLowerCase();
+  // Get first matching machine type for this subdivision
+  const machineData = CONFIG.machines.find(m =>
+    m["Subdivision Code"] === subCode &&
+    m["Machine Type"] === machineType
+  );
 
-  const vehicleTypes = [
-    "टिपर",
-    "ट्रान्सपोर्टर",
-    "युटिलिटी",
-    "utility",
-    "transporter",
-    "tipper"
-  ];
+  const category = machineData?.Category;
 
-  const isVehicle = vehicleTypes.some(v => type.includes(v));
+  const isVehicle = category === "Vehicle";
 
   if (isVehicle) {
+
     vehicleSection.style.display = "block";
     machineSection.style.display = "none";
 
     getEl("tripCount").required = true;
     getEl("locationFromTo").required = true;
+
   } else {
+
     vehicleSection.style.display = "none";
     machineSection.style.display = "block";
 
