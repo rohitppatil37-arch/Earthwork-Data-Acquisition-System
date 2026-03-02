@@ -139,6 +139,8 @@ function toggleFormFields(machineType) {
   const machineSection = getEl("machineSection");
   const vehicleSection = getEl("vehicleSection");
 
+  if (!machineSection || !vehicleSection) return; // 🔐 safety
+
   const isVehicle =
     machineType === "टिपर" ||
     machineType === "ट्रान्सपोर्टर" ||
@@ -152,9 +154,10 @@ function toggleFormFields(machineType) {
     getEl("tripCount").required = true;
     getEl("locationFromTo").required = true;
 
-    // Machine fields reset
-    getEl("dieselTime").required = false;
-    getEl("dieselReading").required = false;
+    // Reset machine-only inputs
+    getEl("dieselQty").value = "";
+    getEl("dieselTime").value = "";
+    getEl("dieselReading").value = "";
 
   } else {
     // ⚙️ MACHINE MODE
@@ -190,9 +193,14 @@ function resetMachineSection() {
   resetSelect(getEl("machineName"), "मशीन निवडा...");
   resetSelect(getEl("staffName"), "चालक / ऑपरेटर निवडा...");
 
-  // Reset dynamic sections
-  if (getEl("machineSection")) getEl("machineSection").style.display = "block";
-  if (getEl("vehicleSection")) getEl("vehicleSection").style.display = "none";
+  if (getEl("machineSection"))
+    getEl("machineSection").style.display = "block";
+
+  if (getEl("vehicleSection"))
+    getEl("vehicleSection").style.display = "none";
+
+  if (getEl("tripCount")) getEl("tripCount").value = "";
+  if (getEl("locationFromTo")) getEl("locationFromTo").value = "";
 }
 
 // ===============================
