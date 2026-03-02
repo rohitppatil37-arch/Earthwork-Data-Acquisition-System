@@ -33,7 +33,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   getEl("mainForm")?.addEventListener("submit", handleSubmit);
 });
-
+getEl("machineName")?.addEventListener("change", () => {
+  const subCode = getValue("subdivision");
+  const machineType = getValue("machineType");
+  toggleFormFields(machineType, subCode);
+});
 // ===============================
 // SUBDIVISION
 // ===============================
@@ -153,12 +157,18 @@ function handleMachineTypeChange() {
 function toggleFormFields(machineType, subCode) {
 
   const vehicleSection = getEl("vehicleSection");
-
   if (!vehicleSection) return;
+
+  const selectedMachine = getValue("machineName");
+
+  if (!selectedMachine) {
+    vehicleSection.style.display = "none";
+    return;
+  }
 
   const machineData = CONFIG.machines.find(m =>
     m["Subdivision Code"] === subCode &&
-    m["Machine Type"] === machineType
+    m["Machine Name"] === selectedMachine
   );
 
   const category = machineData?.Category?.trim();
@@ -167,7 +177,6 @@ function toggleFormFields(machineType, subCode) {
 
   if (isVehicle) {
 
-    // Show only vehicle-specific fields
     vehicleSection.style.display = "block";
 
     getEl("tripCount").required = true;
