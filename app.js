@@ -10,25 +10,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     getEl("workDate").value =
       new Date().toISOString().split("T")[0];
 
+    handleDieselLogic();
+
   } catch (err) {
     console.error(err);
     alert("⚠️ Configuration load करण्यात त्रुटी आली.");
   }
 
-  getEl("subdivision").addEventListener("change", handleSubdivisionChange);
-  getEl("workType").addEventListener("change", handleWorkTypeChange);
-  getEl("machineType").addEventListener("change", handleMachineTypeChange);
+  getEl("subdivision")?.addEventListener("change", handleSubdivisionChange);
+  getEl("workType")?.addEventListener("change", handleWorkTypeChange);
+  getEl("machineType")?.addEventListener("change", handleMachineTypeChange);
 
-  // Auto calculations
-  getEl("startReading").addEventListener("input", calculateTotalReading);
-  getEl("endReading").addEventListener("input", calculateTotalReading);
+  getEl("startReading")?.addEventListener("input", calculateTotalReading);
+  getEl("endReading")?.addEventListener("input", calculateTotalReading);
 
-  getEl("shift1Start").addEventListener("input", calculateShiftHours);
-  getEl("shift1End").addEventListener("input", calculateShiftHours);
-  getEl("shift2Start").addEventListener("input", calculateShiftHours);
-  getEl("shift2End").addEventListener("input", calculateShiftHours);
+  getEl("shift1Start")?.addEventListener("input", calculateShiftHours);
+  getEl("shift1End")?.addEventListener("input", calculateShiftHours);
+  getEl("shift2Start")?.addEventListener("input", calculateShiftHours);
+  getEl("shift2End")?.addEventListener("input", calculateShiftHours);
 
-  getEl("dieselQty").addEventListener("input", handleDieselLogic);
+  getEl("dieselQty")?.addEventListener("input", handleDieselLogic);
+
+  getEl("mainForm")?.addEventListener("submit", handleSubmit);
 });
 
 // ===============================
@@ -36,7 +39,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ===============================
 
 function populateSubdivisions() {
+
+  if (!CONFIG || !CONFIG.subdivisions) return;
+
   const select = getEl("subdivision");
+  if (!select) return;
+
   resetSelect(select, "उपविभाग निवडा...");
 
   CONFIG.subdivisions.forEach(sub => {
@@ -45,6 +53,9 @@ function populateSubdivisions() {
 }
 
 function handleSubdivisionChange() {
+
+  if (!CONFIG || !CONFIG.projects) return;
+
   const subCode = getValue("subdivision");
 
   resetSelect(getEl("workType"), "कामाचा प्रकार निवडा...");
@@ -71,6 +82,9 @@ function handleSubdivisionChange() {
 // ===============================
 
 function handleWorkTypeChange() {
+
+  if (!CONFIG || !CONFIG.projects) return;
+
   const subCode = getValue("subdivision");
   const workType = getValue("workType");
 
@@ -94,6 +108,9 @@ function handleWorkTypeChange() {
 // ===============================
 
 function populateMachineTypes(subCode) {
+
+  if (!CONFIG || !CONFIG.machines) return;
+
   const machineTypeSelect = getEl("machineType");
   resetSelect(machineTypeSelect, "सयंत्राचा प्रकार निवडा...");
 
@@ -109,14 +126,14 @@ function populateMachineTypes(subCode) {
 }
 
 function handleMachineTypeChange() {
+
+  if (!CONFIG || !CONFIG.machines) return;
+
   const subCode = getValue("subdivision");
   const machineType = getValue("machineType");
 
-  const machineSelect = getEl("machineName");
-  const staffSelect = getEl("staffName");
-
-  resetSelect(machineSelect, "मशीन निवडा...");
-  resetSelect(staffSelect, "चालक / ऑपरेटर निवडा...");
+  resetSelect(getEl("machineName"), "मशीन निवडा...");
+  resetSelect(getEl("staffName"), "चालक / ऑपरेटर निवडा...");
 
   if (!subCode || !machineType) return;
 
@@ -126,12 +143,11 @@ function handleMachineTypeChange() {
   );
 
   machines.forEach(m =>
-    addOption(machineSelect, m["Machine Name"], m["Machine Name"])
+    addOption(getEl("machineName"), m["Machine Name"], m["Machine Name"])
   );
 
   populateStaff(subCode, machineType);
-
-  toggleFormFields(machineType);   // Dynamic show/hide
+  toggleFormFields(machineType);
 }
 
 function toggleFormFields(machineType) {
@@ -139,7 +155,7 @@ function toggleFormFields(machineType) {
   const machineSection = getEl("machineSection");
   const vehicleSection = getEl("vehicleSection");
 
-  if (!machineSection || !vehicleSection) return; // 🔐 safety
+  if (!machineSection || !vehicleSection) return;
 
   const isVehicle =
     machineType === "टिपर" ||
@@ -147,20 +163,25 @@ function toggleFormFields(machineType) {
     machineType === "युटिलिटी वाहने";
 
   if (isVehicle) {
-    // 🚛 VEHICLE MODE
+
     vehicleSection.style.display = "block";
     machineSection.style.display = "none";
 
     getEl("tripCount").required = true;
     getEl("locationFromTo").required = true;
 
-    // Reset machine-only inputs
     getEl("dieselQty").value = "";
     getEl("dieselTime").value = "";
     getEl("dieselReading").value = "";
 
+    getEl("shift1Start").value = "";
+    getEl("shift1End").value = "";
+    getEl("shift2Start").value = "";
+    getEl("shift2End").value = "";
+    getEl("totalShiftHours").value = "";
+
   } else {
-    // ⚙️ MACHINE MODE
+
     vehicleSection.style.display = "none";
     machineSection.style.display = "block";
 
@@ -173,6 +194,9 @@ function toggleFormFields(machineType) {
 }
 
 function populateStaff(subCode, machineType) {
+
+  if (!CONFIG || !CONFIG.staff) return;
+
   const roleRequired =
     machineType === "डोझर/एस्कॅव्हेटर"
       ? "Operator"
@@ -198,9 +222,6 @@ function resetMachineSection() {
 
   if (getEl("vehicleSection"))
     getEl("vehicleSection").style.display = "none";
-
-  if (getEl("tripCount")) getEl("tripCount").value = "";
-  if (getEl("locationFromTo")) getEl("locationFromTo").value = "";
 }
 
 // ===============================
@@ -211,8 +232,9 @@ function calculateTotalReading() {
   const start = Number(getValue("startReading")) || 0;
   const end = Number(getValue("endReading")) || 0;
 
-  if (end >= start) {
-    getEl("totalReading").value = (end - start).toFixed(1);
+  if (end >= start && getEl("totalHoursReading")) {
+    getEl("totalHoursReading").value =
+      (end - start).toFixed(1);
   }
 }
 
@@ -223,22 +245,20 @@ function calculateShiftHours() {
     return h + m / 60;
   }
 
-  const s1 = toHours(getValue("shift1Start"));
-  const e1 = toHours(getValue("shift1End"));
-  const s2 = toHours(getValue("shift2Start"));
-  const e2 = toHours(getValue("shift2End"));
+  const total =
+    Math.max(0, toHours(getValue("shift1End")) - toHours(getValue("shift1Start"))) +
+    Math.max(0, toHours(getValue("shift2End")) - toHours(getValue("shift2Start")));
 
-  let total = 0;
-  if (e1 > s1) total += e1 - s1;
-  if (e2 > s2) total += e2 - s2;
-
-  getEl("totalShiftHours").value = total.toFixed(1);
+  if (getEl("totalShiftHours"))
+    getEl("totalShiftHours").value = total.toFixed(1);
 }
 
 function handleDieselLogic() {
-  const qty = Number(getValue("dieselQty"));
+  const qty = Number(getValue("dieselQty")) || 0;
   const time = getEl("dieselTime");
   const reading = getEl("dieselReading");
+
+  if (!time || !reading) return;
 
   if (qty > 0) {
     time.disabled = false;
@@ -255,28 +275,44 @@ function handleDieselLogic() {
 // FORM SUBMIT
 // ===============================
 
-getEl("mainForm").addEventListener("submit", async function (e) {
+async function handleSubmit(e) {
+
   e.preventDefault();
+
+  const btn = document.querySelector("button[type='submit']");
+  btn.disabled = true;
+  btn.textContent = "Saving...";
 
   const start = Number(getValue("startReading")) || 0;
   const end = Number(getValue("endReading")) || 0;
-  const total = end >= start ? end - start : 0;
+
+  if (end < start) {
+    alert("❌ शेवटचे reading सुरुवातीपेक्षा कमी असू शकत नाही.");
+    btn.disabled = false;
+    btn.textContent = "✅ माहिती जतन करा";
+    return;
+  }
+
+  const total = end - start;
+  const diesel = Number(getValue("dieselQty")) || 0;
 
   let remark = "✅ काम झाले";
-  if (!total && !getValue("dieselQty")) {
+
+  if (total === 0 && diesel === 0) {
     remark = "🚫 काम झाले नाही";
-  } else if (getValue("dieselQty") == 0) {
+  } else if (total > 0 && diesel === 0) {
     remark = "⚠️ काम झाले पण डिझेल भरले नाही";
   }
 
   const payload = {
+    "उपविभाग": getValue("subdivision"),
     "दिनांक": getValue("workDate"),
     "कामाचा प्रकार": getValue("workType"),
     "प्रकल्पाचे नाव": getValue("projectName"),
     "सयंत्राचा प्रकार": getValue("machineType"),
     "चालक": getValue("staffName"),
     "मशीन": getValue("machineName"),
-    "डिझेल (लिटर)": getValue("dieselQty"),
+    "डिझेल (लिटर)": diesel,
     "डिझेल वेळ": getValue("dieselTime"),
     "डिझेल reading": getValue("dieselReading"),
     "सुरुवातीचे reading": start,
@@ -293,6 +329,7 @@ getEl("mainForm").addEventListener("submit", async function (e) {
   };
 
   try {
+
     const res = await fetch(API_URL, {
       method: "POST",
       body: JSON.stringify(payload),
@@ -304,8 +341,10 @@ getEl("mainForm").addEventListener("submit", async function (e) {
     if (result.result === "success") {
       alert("✅ माहिती यशस्वीरित्या जतन झाली!");
       getEl("mainForm").reset();
+      resetMachineSection();
       getEl("workDate").value =
         new Date().toISOString().split("T")[0];
+      handleDieselLogic();
     } else {
       alert("⚠️ Server error आला.");
     }
@@ -314,7 +353,10 @@ getEl("mainForm").addEventListener("submit", async function (e) {
     console.error(err);
     alert("❌ नेटवर्क एरर. पुन्हा प्रयत्न करा.");
   }
-});
+
+  btn.disabled = false;
+  btn.textContent = "✅ माहिती जतन करा";
+}
 
 // ===============================
 // UTILITIES
@@ -324,11 +366,13 @@ function getEl(id) { return document.getElementById(id); }
 function getValue(id) { return getEl(id)?.value || ""; }
 
 function resetSelect(selectElement, placeholder) {
+  if (!selectElement) return;
   selectElement.innerHTML = "";
   addOption(selectElement, "", placeholder);
 }
 
 function addOption(selectElement, value, text) {
+  if (!selectElement) return;
   const opt = document.createElement("option");
   opt.value = value;
   opt.textContent = text;
