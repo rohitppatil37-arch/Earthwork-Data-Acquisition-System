@@ -157,25 +157,26 @@ function toggleFormFields(machineType) {
 
   if (!machineSection || !vehicleSection) return;
 
-  const type = machineType?.trim().toLowerCase();
+  const type = machineType.trim().toLowerCase();
 
-  const isVehicle =
-    type.includes("टिपर") ||
-    type.includes("transporter") ||
-    type.includes("ट्रान्सपोर्टर") ||
-    type.includes("utility") ||
-    type.includes("युटिलिटी");
+  const vehicleTypes = [
+    "टिपर",
+    "ट्रान्सपोर्टर",
+    "युटिलिटी",
+    "utility",
+    "transporter",
+    "tipper"
+  ];
+
+  const isVehicle = vehicleTypes.some(v => type.includes(v));
 
   if (isVehicle) {
-
     vehicleSection.style.display = "block";
     machineSection.style.display = "none";
 
     getEl("tripCount").required = true;
     getEl("locationFromTo").required = true;
-
   } else {
-
     vehicleSection.style.display = "none";
     machineSection.style.display = "block";
 
