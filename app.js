@@ -290,28 +290,19 @@ async function handleSubmit(e) {
   btn.disabled = true;
   btn.innerHTML = "⏳जतन होत आहे...";
 
-  // ✅ MOVE THIS UP
   const subSelect = getEl("subdivision");
   const subCode = subSelect?.value || "";
   const subName = subSelect?.options[subSelect.selectedIndex]?.text || "";
-if (!subCode || !getValue("workType") || !getValue("projectName") ||
-    !getValue("machineType") || !getValue("machineName") ||
-    !getValue("staffName")) {
 
-  alert("❌ कृपया सर्व आवश्यक माहिती भरा.");
-  btn.disabled = false;
-  btn.innerHTML = "✅ माहिती जतन करा";
-  return;
-} 
-  const start = Number(getValue("startReading")) || 0;
-  const end = Number(getValue("endReading")) || 0;
-
-  if (end < start) {
-    alert("❌ शेवटचे reading सुरुवातीपेक्षा कमी असू शकत नाही.");
+  // ✅ Single validation call
+  if (!validateFrontend()) {
     btn.disabled = false;
-btn.innerHTML = "✅ माहिती जतन करा";
+    btn.innerHTML = "✅ माहिती जतन करा";
     return;
   }
+
+  const start = Number(getValue("startReading")) || 0;
+  const end = Number(getValue("endReading")) || 0;
 
   const total = end - start;
   const diesel = Number(getValue("dieselQty")) || 0;
@@ -323,18 +314,7 @@ btn.innerHTML = "✅ माहिती जतन करा";
   } else if (total > 0 && diesel === 0) {
     remark = "⚠️ काम झाले पण डिझेल भरले नाही";
   }
- 
-if (getEl("vehicleSection")?.style.display === "block") {
-  if (!getValue("tripCount") || !getValue("locationFromTo")) {
-    alert("❌ वाहनासाठी ट्रिप्स व स्थान माहिती आवश्यक आहे.");
-    btn.disabled = false;
-btn.innerHTML = "✅ माहिती जतन करा";
-    return;
-  }
-}
-  
 
-  // ✅ आता payload तयार करायचा
   const payload = {
     "उपविभाग कोड": subCode,
     "उपविभाग": subName,
@@ -359,49 +339,40 @@ btn.innerHTML = "✅ माहिती जतन करा";
     "एकूण तास (shift)": getValue("totalShiftHours"),
     "टीप": remark
   };
-  
+
   try {
 
-  const res = await fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      }
+    });
+
+    const text = await res.text();
+
+    if (text && text.toLowerCase().includes("success")) {
+
+      alert("✅ माहिती यशस्वीरित्या जतन झाली!");
+      getEl("mainForm").reset();
+      resetMachineSection();
+      getEl("workDate").value =
+        new Date().toISOString().split("T")[0];
+      handleDieselLogic();
+
+    } else {
+
+      alert("⚠️ Server error आला.\n" + text);
     }
-  });
 
-  if (!res.ok) {
-    throw new Error("Server returned " + res.status);
+  } catch (err) {
+
+    alert("❌ नेटवर्क एरर. पुन्हा प्रयत्न करा.");
   }
-
-  const text = await res.text();
-  console.log("Server Response:", text);
-
-  if (text && text.toLowerCase().includes("success")) {
-
-    alert("✅ माहिती यशस्वीरित्या जतन झाली!");
-
-    getEl("mainForm").reset();
-    resetMachineSection();
-    getEl("workDate").value =
-      new Date().toISOString().split("T")[0];
-    handleDieselLogic();
-
-  } else {
-
-    alert("⚠️ Server error आला.\n" + text);
-
-  }
-
-} catch (err) {
-
-  console.error("Fetch Error:", err);
-  alert("❌ नेटवर्क एरर. पुन्हा प्रयत्न करा.");
-
-}
 
   btn.disabled = false;
-btn.innerHTML = "✅ माहिती जतन करा";
+  btn.innerHTML = "✅ माहिती जतन करा";
 }
 
 // ===============================
@@ -427,4 +398,56 @@ function addOption(selectElement, value, text) {
 
 function unique(arr) {
   return [...new Set(arr)];
+}
+function validateFrontend() {
+
+  const requiredFields = [
+    "subdivision",
+    "workType",
+    "projectName",
+    "machineType",
+    "machineName",
+    "staffName",
+    "startReading",
+    "endReading"
+  ];
+
+  for (let id of requiredFields) {
+    if (!getValue(id).trim()) {
+      alert("❌ कृपया सर्व आवश्यक माहिती भरा.");
+      getEl(id)?.focus();
+      return false;
+    }
+  }
+
+  // Reading validation
+  const start = Number(getValue("startReading"));
+  const end = Number(getValue("endReading"));
+
+  if (end < start) {
+    alert("❌ शेवटचे reading सुरुवातीपेक्षा कमी असू शकत नाही.");
+    return false;
+  }
+
+  // Vehicle specific validation
+  const vehicleSection = getEl("vehicleSection");
+
+  if (vehicleSection && vehicleSection.offsetParent !== null) {
+    if (!getValue("tripCount").trim() || !getValue("locationFromTo").trim()) {
+      alert("❌ वाहनासाठी ट्रिप्स व स्थान माहिती आवश्यक आहे.");
+      return false;
+    }
+  }
+
+  // Diesel logic validation
+  const diesel = Number(getValue("dieselQty")) || 0;
+
+  if (diesel > 0) {
+    if (!getValue("dieselTime").trim() || !getValue("dieselReading").trim()) {
+      alert("❌ डिझेल भरले असल्यास वेळ व reading आवश्यक आहे.");
+      return false;
+    }
+  }
+
+  return true;
 }
