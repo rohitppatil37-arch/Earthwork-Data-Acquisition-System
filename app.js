@@ -163,43 +163,38 @@ function handleMachineTypeChange() {
 function toggleFormFields(machineType, subCode) {
 
   const vehicleSection = getEl("vehicleSection");
-  if (!vehicleSection) return;
+  if (!vehicleSection || !CONFIG?.machines) return;
 
   const selectedMachine = getValue("machineName");
 
+  // If machine not selected yet
   if (!selectedMachine) {
     vehicleSection.style.display = "none";
+    getEl("tripCount").required = false;
+    getEl("locationFromTo").required = false;
     return;
   }
 
   const machineData = CONFIG.machines.find(m =>
-  m["Subdivision Code"]?.trim() === subCode?.trim() &&
-  m["Machine Name"]?.trim() === selectedMachine?.trim()
-);
+    m["Subdivision Code"]?.trim() === subCode?.trim() &&
+    m["Machine Name"]?.trim() === selectedMachine?.trim()
+  );
 
-if (!machineData) {
-  vehicleSection.style.display = "none";
-  return;
-}
+  if (!machineData) {
+    vehicleSection.style.display = "none";
+    return;
+  }
 
-  const category = machineData?.Category?.trim();
-
-  const isVehicle = category === "Vehicle";
+  const isVehicle = machineData.Category?.trim() === "Vehicle";
 
   if (isVehicle) {
-
     vehicleSection.style.display = "block";
-
     getEl("tripCount").required = true;
     getEl("locationFromTo").required = true;
-
   } else {
-
     vehicleSection.style.display = "none";
-
     getEl("tripCount").required = false;
     getEl("locationFromTo").required = false;
-
     getEl("tripCount").value = "";
     getEl("locationFromTo").value = "";
   }
