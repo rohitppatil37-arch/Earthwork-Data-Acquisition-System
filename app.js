@@ -534,22 +534,27 @@ document.querySelectorAll(".error").forEach(el =>
   }
 
   // Shift Time Validation
-  function timeToMinutes(t) {
-    const [h, m] = t.split(":").map(Number);
-    return h * 60 + m;
-  }
+function timeToMinutes(t) {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
 
-  const shiftStart = getValue("shift1Start");
-  const shiftEnd = getValue("shift1End");
+const shift1Start = getValue("shift1Start");
+const shift1End   = getValue("shift1End");
+const shift2Start = getValue("shift2Start");
+const shift2End   = getValue("shift2End");
 
-  if (shiftStart && shiftEnd) {
-  if (timeToMinutes(shiftEnd) <= timeToMinutes(shiftStart)) {
+// Shift 1 Check
+if (shift1Start && shift1End) {
+  if (timeToMinutes(shift1End) <= timeToMinutes(shift1Start)) {
     showErrorBox([
       { id: "shift1End", label: "शिफ्ट-१ बंद वेळ सुरू वेळेपेक्षा मोठी असावी" }
     ]);
     return false;
   }
 }
+
+// Shift 2 Check
 if (shift2Start && shift2End) {
   if (timeToMinutes(shift2End) <= timeToMinutes(shift2Start)) {
     showErrorBox([
