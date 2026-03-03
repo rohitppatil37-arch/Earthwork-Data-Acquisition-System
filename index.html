@@ -478,9 +478,29 @@ padding-top: 15px;
 <script src="app.js"></script>
 
 <script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  const token = localStorage.getItem("token");
+  const btn = document.querySelector(".btn-admin");
+
+  if(token){
+    btn.innerText = "📊 Admin Dashboard";
+  }
+
+});
+
 function goToLogin(){
-  window.location.href = "login.html";
+  const token = localStorage.getItem("token");
+
+  if(token){
+    window.location.href = "admin-dashboard.html";
+  } else {
+    window.location.href = "login.html";
+  }
 }
+
+</script>
 </script>
 </body>
 </html>
