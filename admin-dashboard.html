@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | यांत्रिकी मातीकाम माहिती प्रणाली</title>
+
+<style>
+:root{
+  --primary:#1e40af;
+  --bg:#f3f4f6;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --danger:#b91c1c;
+  --success:#059669;
+}
+
+body{
+  margin:0;
+  font-family:"Noto Sans Devanagari", system-ui, sans-serif;
+  background:var(--bg);
+  padding:15px 20px 40px;
+}
+
+/* HEADER */
+.gov-header{
+  text-align:center;
+  margin-bottom:25px;
+  padding-bottom:15px;
+  border-bottom:3px solid var(--primary);
+  background:white;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.05);
+  padding-top:15px;
+}
+
+.gov-logos{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:20px;
+  margin-bottom:15px;
+}
+
+.center-logo{ width:85px; }
+.side-logo{ width:70px; }
+
+.gov-title{
+  font-size:24px;
+  font-weight:700;
+  color:var(--primary);
+}
+
+/* DASHBOARD CARD */
+
+.container{
+  max-width:750px;
+  margin:auto;
+  background:var(--card);
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.subdivision-name{
+  font-size:20px;
+  font-weight:700;
+  color:var(--success);
+  margin-bottom:20px;
+  text-align:center;
+}
+
+.report-section{
+  margin-top:20px;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+  background:var(--primary);
+  color:white;
+}
+
+button.logout{
+  background:var(--danger);
+  margin-top:25px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="gov-header">
+  <div class="gov-logos">
+    <img src="left-logo.png" class="side-logo">
+    <img src="main-logo.png" class="center-logo">
+    <img src="right-logo.png" class="side-logo">
+  </div>
+  <div class="gov-title">
+    यांत्रिकी मातीकाम माहिती प्रणाली
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="subdivision-name" id="subdivisionName">
+    Loading...
+  </div>
+
+  <div class="report-section">
+    <h3>📥 Reports Download</h3>
+
+    <button onclick="downloadFullReport()">
+      📊 पूर्ण अहवाल डाउनलोड करा
+    </button>
+
+    <button onclick="downloadTodayReport()">
+      📅 आजचा अहवाल डाउनलोड करा
+    </button>
+  </div>
+
+  <button class="logout" onclick="logout()">
+    🚪 Logout
+  </button>
+
+</div>
+
+<script>
+
+const API_URL = "PASTE_YOUR_APPS_SCRIPT_URL_HERE";
+
+/* ============================= */
+/* PAGE SECURITY CHECK */
+/* ============================= */
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  const token = localStorage.getItem("token");
+  const subdivision = localStorage.getItem("subdivision");
+
+  if(!token || !subdivision){
+    window.location.href = "login.html";
+    return;
+  }
+
+  document.getElementById("subdivisionName").innerText =
+    "📍 उपविभाग: " + subdivision;
+
+});
+
+/* ============================= */
+/* REPORT FUNCTIONS */
+/* ============================= */
+
+function downloadFullReport(){
+
+  const token = localStorage.getItem("token");
+  const subdivision = localStorage.getItem("subdivision");
+
+  window.open(
+    API_URL + "?mode=dashboard&subdivision=" + subdivision + "&token=" + token,
+    "_blank"
+  );
+}
+
+function downloadTodayReport(){
+  alert("Future enhancement: Today report filter");
+}
+
+/* ============================= */
+/* LOGOUT */
+/* ============================= */
+
+function logout(){
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("subdivision");
+  localStorage.removeItem("role");
+
+  window.location.href = "login.html";
+}
+
+</script>
+
+</body>
+</html>
