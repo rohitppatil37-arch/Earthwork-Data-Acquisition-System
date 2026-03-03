@@ -489,18 +489,20 @@ document.querySelectorAll(".error").forEach(el =>
   el.classList.remove("error")
 );
   const fieldLabels = {
-    subdivision: "उपविभाग",
-    workType: "कामाचा प्रकार",
-    projectName: "प्रकल्पाचे नाव",
-    machineType: "सयंत्राचा प्रकार",
-    machineName: "मशीन",
-    staffName: "चालक / ऑपरेटर",
-    startReading: "सुरुवातीचे reading",
-    endReading: "शेवटचे reading",
-    dieselQty: "डिझेल प्रमाण",
-    shift1Start: "शिफ्ट-१ सुरू वेळ",
-    shift1End: "शिफ्ट-१ बंद वेळ"
-  };
+  subdivision: "उपविभाग",
+  workType: "कामाचा प्रकार",
+  projectName: "प्रकल्पाचे नाव",
+  machineType: "सयंत्राचा प्रकार",
+  machineName: "मशीन",
+  staffName: "चालक / ऑपरेटर",
+  startReading: "सुरुवातीचे reading",
+  endReading: "शेवटचे reading",
+  dieselQty: "डिझेल प्रमाण",
+  shift1Start: "शिफ्ट-१ सुरू वेळ",
+  shift1End: "शिफ्ट-१ बंद वेळ",
+  shift2Start: "शिफ्ट-२ सुरू वेळ",
+  shift2End: "शिफ्ट-२ बंद वेळ"
+};
 
   let missing = [];
 
