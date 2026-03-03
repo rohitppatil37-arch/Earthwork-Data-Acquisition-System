@@ -402,15 +402,18 @@ function unique(arr) {
 function validateFrontend() {
 
   const requiredFields = [
-    "subdivision",
-    "workType",
-    "projectName",
-    "machineType",
-    "machineName",
-    "staffName",
-    "startReading",
-    "endReading"
-  ];
+  "subdivision",
+  "workType",
+  "projectName",
+  "machineType",
+  "machineName",
+  "staffName",
+  "startReading",
+  "endReading",
+  "dieselQty",
+  "shift1Start",
+  "shift1End"
+];
 
   for (let id of requiredFields) {
     if (!getValue(id).trim()) {
@@ -421,33 +424,59 @@ function validateFrontend() {
   }
 
   // Reading validation
-  const start = Number(getValue("startReading"));
-  const end = Number(getValue("endReading"));
+const start = Number(getValue("startReading"));
+const end = Number(getValue("endReading"));
 
-  if (end < start) {
-    alert("❌ शेवटचे reading सुरुवातीपेक्षा कमी असू शकत नाही.");
+if (isNaN(start) || isNaN(end)) {
+  alert("❌ Reading वैध संख्या असावी.");
+  return false;
+}
+
+if (end <= start) {
+  alert("❌ शेवटचे reading सुरुवातीपेक्षा मोठे असावे.");
+  return false;
+}
+
+// Shift validation
+function timeToMinutes(t) {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
+
+const shiftStart = getValue("shift1Start");
+const shiftEnd = getValue("shift1End");
+
+if (timeToMinutes(shiftEnd) <= timeToMinutes(shiftStart)) {
+  alert("❌ शिफ्ट-१ बंद वेळ सुरू वेळेपेक्षा मोठी असावी.");
+  return false;
+}
+
+// Diesel validation
+const dieselRaw = getValue("dieselQty").trim();
+
+if (dieselRaw === "") {
+  alert("❌ डिझेल प्रमाण भरणे आवश्यक आहे.");
+  return false;
+}
+
+const diesel = Number(dieselRaw);
+
+if (isNaN(diesel) || diesel < 0) {
+  alert("❌ डिझेल प्रमाण वैध संख्या असावी.");
+  return false;
+}
+
+if (diesel > 0) {
+  if (!getValue("dieselTime").trim()) {
+    alert("❌ डिझेल वेळ आवश्यक आहे.");
     return false;
   }
 
-  // Vehicle specific validation
-  const vehicleSection = getEl("vehicleSection");
-
-  if (vehicleSection && vehicleSection.offsetParent !== null) {
-    if (!getValue("tripCount").trim() || !getValue("locationFromTo").trim()) {
-      alert("❌ वाहनासाठी ट्रिप्स व स्थान माहिती आवश्यक आहे.");
-      return false;
-    }
+  if (!getValue("dieselReading").trim()) {
+    alert("❌ डिझेल reading आवश्यक आहे.");
+    return false;
   }
-
-  // Diesel logic validation
-  const diesel = Number(getValue("dieselQty")) || 0;
-
-  if (diesel > 0) {
-    if (!getValue("dieselTime").trim() || !getValue("dieselReading").trim()) {
-      alert("❌ डिझेल भरले असल्यास वेळ व reading आवश्यक आहे.");
-      return false;
-    }
-  }
+}
 
   return true;
 }
