@@ -216,8 +216,9 @@ async function login(){
 
     /* Save Session */
     localStorage.setItem("token", data.token);
-    localStorage.setItem("subdivision", data.subdivision);
-    localStorage.setItem("role", data.role);
+localStorage.setItem("subdivisionCode", data.subdivisionCode);
+localStorage.setItem("subdivisionName", data.subdivisionName);
+localStorage.setItem("role", data.role);
 
     /* Redirect */
     window.location.href = "admin-dashboard.html";
