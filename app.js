@@ -566,25 +566,22 @@ const shift1End   = getValue("shift1End");
 const shift2Start = getValue("shift2Start");
 const shift2End   = getValue("shift2End");
 
-// Shift 1 Check
-if (shift1Start && shift1End) {
-  if (timeToMinutes(shift1End) <= timeToMinutes(shift1Start)) {
-    showErrorBox([
-      { id: "shift1End", label: "शिफ्ट-१ बंद वेळ सुरू वेळेपेक्षा मोठी असावी" }
-    ]);
-    return false;
-  }
+// Shift 1 strict validation
+if (timeToMinutes(shift1End) <= timeToMinutes(shift1Start)) {
+  showErrorBox([
+    { id: "shift1End", label: "शिफ्ट-१ बंद वेळ सुरू वेळेपेक्षा मोठी असावी" }
+  ]);
+  return false;
 }
 
-// Shift 2 Check
-if (shift2Start && shift2End) {
-  if (timeToMinutes(shift2End) <= timeToMinutes(shift2Start)) {
-    showErrorBox([
-      { id: "shift2End", label: "शिफ्ट-२ बंद वेळ सुरू वेळेपेक्षा मोठी असावी" }
-    ]);
-    return false;
-  }
+// Shift 2 strict validation
+if (timeToMinutes(shift2End) <= timeToMinutes(shift2Start)) {
+  showErrorBox([
+    { id: "shift2End", label: "शिफ्ट-२ बंद वेळ सुरू वेळेपेक्षा मोठी असावी" }
+  ]);
+  return false;
 }
+  
 // ✅ If everything valid
 closeErrorBox();
 return true;
