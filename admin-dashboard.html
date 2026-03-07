@@ -314,7 +314,6 @@ return;
 document.getElementById("subdivisionName").innerText=
 "उपविभाग : "+subName;
 
-
 const today=new Date().toISOString().split("T")[0];
 
 const startMonth=new Date(
@@ -322,7 +321,6 @@ new Date().getFullYear(),
 new Date().getMonth(),
 1
 ).toISOString().split("T")[0];
-
 
 document.querySelectorAll("input[id$='_from']")
 .forEach(el=>el.value=startMonth);
