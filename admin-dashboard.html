@@ -3,27 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Admin Dashboard | यांत्रिकी मातीकाम माहिती प्रणाली</title>
 
 <style>
+
 :root{
   --primary:#1e40af;
   --bg:#f3f4f6;
   --card:#ffffff;
   --border:#e5e7eb;
   --danger:#b91c1c;
-  --success:#059669;
-  --secondary:#6b7280;
 }
+
+*{box-sizing:border-box;}
 
 body{
   margin:0;
-  font-family:"Noto Sans Devanagari", system-ui, sans-serif;
+  font-family:"Noto Sans Devanagari",system-ui,sans-serif;
   background:var(--bg);
   padding:15px 20px 40px;
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
+
 .gov-header{
   text-align:center;
   margin-bottom:25px;
@@ -43,8 +46,8 @@ body{
   margin-bottom:15px;
 }
 
-.center-logo{ width:85px; }
-.side-logo{ width:70px; }
+.center-logo{width:85px;}
+.side-logo{width:70px;}
 
 .gov-title{
   font-size:24px;
@@ -52,7 +55,7 @@ body{
   color:var(--primary);
 }
 
-/* CARD */
+/* ================= CONTAINER ================= */
 
 .container{
   max-width:750px;
@@ -64,34 +67,51 @@ body{
 }
 
 .subdivision-name{
+  text-align:center;
   font-size:20px;
   font-weight:700;
-  color:var(--success);
-  margin-bottom:8px;
-  text-align:center;
-}
-
-.role-text{
-  text-align:center;
-  font-size:14px;
-  color:var(--secondary);
+  color:var(--primary);
   margin-bottom:20px;
 }
 
-.report-section{
-  margin-top:20px;
+/* ================= REPORT CARD ================= */
+
+.report-card{
+  margin-top:18px;
+  padding:16px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#f9fafb;
+}
+
+.report-card label{
+  font-weight:600;
+  display:block;
+  margin-bottom:10px;
+}
+
+.period-row{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.period-row input{
+  flex:1;
+  padding:8px;
+  border-radius:6px;
+  border:1px solid var(--border);
 }
 
 button{
   width:100%;
-  padding:12px;
+  padding:10px;
   border:none;
   border-radius:8px;
-  font-weight:600;
-  cursor:pointer;
-  margin-top:10px;
   background:var(--primary);
   color:white;
+  font-weight:600;
+  cursor:pointer;
   transition:0.2s;
 }
 
@@ -99,125 +119,218 @@ button:hover{
   opacity:0.9;
 }
 
-button.logout{
+.logout{
   background:var(--danger);
   margin-top:25px;
 }
 
-.loading{
-  text-align:center;
-  font-size:14px;
-  color:var(--secondary);
+@media(max-width:600px){
+
+  .period-row{
+    flex-direction:column;
+  }
+
+  .center-logo{width:75px;}
+  .side-logo{width:65px;}
 }
 
 </style>
 </head>
+
 <body>
 
+<!-- ================= HEADER ================= -->
+
 <div class="gov-header">
-  <div class="gov-logos">
-    <img src="left-logo.png" class="side-logo">
-    <img src="main-logo.png" class="center-logo">
-    <img src="right-logo.png" class="side-logo">
-  </div>
-  <div class="gov-title">
-    यांत्रिकी मातीकाम माहिती प्रणाली
-  </div>
+
+<div class="gov-logos">
+<img src="left-logo.png" class="side-logo">
+<img src="main-logo.png" class="center-logo">
+<img src="right-logo.png" class="side-logo">
 </div>
+
+<div class="gov-title">
+यांत्रिकी मातीकाम माहिती प्रणाली
+</div>
+
+</div>
+
+<!-- ================= DASHBOARD ================= -->
 
 <div class="container">
 
-  <div class="subdivision-name" id="subdivisionName"></div>
-  <div class="role-text" id="roleText"></div>
+<div class="subdivision-name" id="subdivisionName"></div>
 
-  <div class="report-section">
-    <h3>📥 Reports Download</h3>
+<h3>📊 रिपोर्ट डाउनलोड</h3>
 
-    <button onclick="downloadFullReport()">
-      📊 पूर्ण अहवाल डाउनलोड करा
-    </button>
 
-    <button onclick="downloadTodayReport()">
-      📅 आजचा अहवाल डाउनलोड करा
-    </button>
-  </div>
+<!-- MACHINE REPORT -->
+<div class="report-card">
 
-  <button class="logout" onclick="logout()">
-    🚪 Logout
-  </button>
+<label>⚙️ सयंत्राच्या तास / किमी चा अहवाल</label>
 
-  <div class="loading" id="loadingText"></div>
+<div class="period-row">
+<input type="date" id="m_from">
+<input type="date" id="m_to">
+</div>
+
+<button onclick="downloadReport('machine')">
+⬇️ Download
+</button>
 
 </div>
+
+
+<!-- GPS REPORT -->
+<div class="report-card">
+
+<label>📡 GPS अहवाल</label>
+
+<div class="period-row">
+<input type="date" id="g_from">
+<input type="date" id="g_to">
+</div>
+
+<button onclick="downloadReport('gps')">
+⬇️ Download
+</button>
+
+</div>
+
+
+<!-- ATTENDANCE REPORT -->
+<div class="report-card">
+
+<label>👷 हजेरी अहवाल</label>
+
+<div class="period-row">
+<input type="date" id="a_from">
+<input type="date" id="a_to">
+</div>
+
+<button onclick="downloadReport('attendance')">
+⬇️ Download
+</button>
+
+</div>
+
+
+<!-- PENDING REPORT -->
+<div class="report-card">
+
+<label>💰 प्रलंबित रकमेचा अहवाल</label>
+
+<div class="period-row">
+<input type="date" id="p_from">
+<input type="date" id="p_to">
+</div>
+
+<button onclick="downloadReport('pending')">
+⬇️ Download
+</button>
+
+</div>
+
+
+<button class="logout" onclick="logout()">
+🚪 Logout
+</button>
+
+</div>
+
 
 <script>
 
 const API_URL = "PASTE_YOUR_APPS_SCRIPT_URL_HERE";
 
-/* ============================= */
-/* SECURITY + PAGE LOAD */
-/* ============================= */
+
+/* ================= PAGE LOAD ================= */
 
 document.addEventListener("DOMContentLoaded", function(){
 
-  const token = localStorage.getItem("token");
-  const subdivisionName = localStorage.getItem("subdivisionName");
-  const subdivisionCode = localStorage.getItem("subdivisionCode");
-  const role = localStorage.getItem("role");
+const token = localStorage.getItem("token");
+const subdivisionName = localStorage.getItem("subdivisionName");
+const subdivisionCode = localStorage.getItem("subdivisionCode");
 
-  if(!token || !subdivisionCode || !subdivisionName){
-    window.location.href = "login.html";
-    return;
-  }
+if(!token || !subdivisionCode){
+  window.location.href = "login.html";
+  return;
+}
 
-  document.getElementById("subdivisionName").innerText =
-    " उपविभाग: " + subdivisionName;
+document.getElementById("subdivisionName").innerText =
+"उपविभाग : " + subdivisionName;
 
-  document.getElementById("roleText").innerText =
-    "भूमिका: " + role;
+
+/* Default period */
+
+const today = new Date().toISOString().split("T")[0];
+const startMonth = new Date(new Date().getFullYear(),new Date().getMonth(),1)
+.toISOString().split("T")[0];
+
+document.querySelectorAll("input[id$='_from']").forEach(el=>el.value=startMonth);
+document.querySelectorAll("input[id$='_to']").forEach(el=>el.value=today);
 
 });
 
-/* ============================= */
-/* REPORT FUNCTIONS */
-/* ============================= */
 
-function downloadFullReport(){
+/* ================= REPORT DOWNLOAD ================= */
 
-  const token = localStorage.getItem("token");
-  const subdivisionCode = localStorage.getItem("subdivisionCode");
+function downloadReport(type){
 
-  document.getElementById("loadingText").innerText = "⏳ अहवाल तयार होत आहे...";
+const token = localStorage.getItem("token");
+const sub = localStorage.getItem("subdivisionCode");
 
-  window.open(
-    API_URL + "?mode=dashboard&subdivision=" + subdivisionCode + "&token=" + token,
-    "_blank"
-  );
+let from,to;
 
-  setTimeout(()=>{
-    document.getElementById("loadingText").innerText = "";
-  },2000);
+if(type==="machine"){
+from=document.getElementById("m_from").value;
+to=document.getElementById("m_to").value;
 }
 
-function downloadTodayReport(){
-  alert("Future enhancement: Today report filter");
+if(type==="gps"){
+from=document.getElementById("g_from").value;
+to=document.getElementById("g_to").value;
 }
 
-/* ============================= */
-/* LOGOUT */
-/* ============================= */
+if(type==="attendance"){
+from=document.getElementById("a_from").value;
+to=document.getElementById("a_to").value;
+}
+
+if(type==="pending"){
+from=document.getElementById("p_from").value;
+to=document.getElementById("p_to").value;
+}
+
+window.open(
+API_URL +
+"?mode=report"+
+"&type="+type+
+"&from="+from+
+"&to="+to+
+"&subdivision="+sub+
+"&token="+token,
+"_blank"
+);
+
+}
+
+
+/* ================= LOGOUT ================= */
 
 function logout(){
 
-  if(confirm("तुम्हाला लॉगआउट करायचे आहे का?")){
+if(confirm("तुम्हाला लॉगआउट करायचे आहे का?")){
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("subdivisionCode");
-    localStorage.removeItem("subdivisionName");
-    localStorage.removeItem("role");
+localStorage.removeItem("token");
+localStorage.removeItem("subdivisionCode");
+localStorage.removeItem("subdivisionName");
+localStorage.removeItem("role");
 
-    window.location.href = "login.html";
-  }
+window.location.href="login.html";
+
+}
+
 }
 
 </script>
