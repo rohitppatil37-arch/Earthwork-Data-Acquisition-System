@@ -18,9 +18,7 @@
 --border:#e5e7eb;
 }
 
-*{
-box-sizing:border-box;
-}
+*{box-sizing:border-box;}
 
 body{
 margin:0;
@@ -53,11 +51,6 @@ margin-bottom:15px;
 .center-logo{width:85px;}
 .side-logo{width:70px;}
 
-.gov-subtitle{
-font-size:16px;
-margin-bottom:6px;
-}
-
 .gov-title{
 font-size:24px;
 font-weight:700;
@@ -71,17 +64,36 @@ max-width:1200px;
 margin:auto;
 }
 
+/* INFO */
+
+.info{
+background:#eef2ff;
+padding:12px;
+border-radius:8px;
+margin-bottom:20px;
+font-weight:600;
+color:#1e40af;
+}
+
 /* FILTERS */
 
 .filters{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-gap:12px;
-margin-bottom:20px;
+grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+gap:14px;
+margin-bottom:25px;
 align-items:end;
 }
 
+.filters label{
+font-size:13px;
+font-weight:600;
+margin-bottom:4px;
+display:block;
+}
+
 select,input{
+width:100%;
 padding:9px;
 font-size:14px;
 border-radius:8px;
@@ -122,7 +134,7 @@ color:#64748b;
 }
 
 .card p{
-font-size:24px;
+font-size:26px;
 font-weight:bold;
 margin-top:5px;
 }
@@ -142,14 +154,14 @@ border-radius:10px;
 box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }
 
-/* MOBILE */
+/* LOADER */
 
-@media(max-width:600px){
-
-.center-logo{width:75px;}
-.side-logo{width:65px;}
-.gov-title{font-size:20px;}
-
+.loader{
+display:none;
+text-align:center;
+font-weight:600;
+color:#1e40af;
+margin-bottom:10px;
 }
 
 </style>
@@ -157,18 +169,12 @@ box-shadow:0 2px 6px rgba(0,0,0,0.08);
 
 <body>
 
-<!-- HEADER -->
-
 <div class="gov-header">
 
 <div class="gov-logos">
 <img src="left-logo.png" class="side-logo">
 <img src="main-logo.png" class="center-logo">
 <img src="right-logo.png" class="side-logo">
-</div>
-
-<div class="gov-subtitle">
-मा. कार्यकारी अभियंता यांत्रिकी विभाग (को.प्र), अलोरे अंतर्गत
 </div>
 
 <div class="gov-title">
@@ -179,25 +185,54 @@ box-shadow:0 2px 6px rgba(0,0,0,0.08);
 
 <div class="container">
 
-<h2>Fuel Performance Dashboard</h2>
+<h2>⛽ Fuel Performance Dashboard</h2>
+
+<div class="info">
+👉 उपविभाग, सयंत्र व दिनांक निवडून इंधन कार्यक्षमता विश्लेषण पहा.
+</div>
 
 <!-- FILTERS -->
 
 <div class="filters">
 
-<select id="subdivision"></select>
+<div>
+<label>उपविभाग</label>
+<select id="subdivision">
+<option value="">उपविभाग निवडा</option>
+</select>
+</div>
 
-<select id="category"></select>
+<div>
+<label>प्रकार</label>
+<select id="category">
+<option value="">प्रकार निवडा</option>
+</select>
+</div>
 
-<select id="machine"></select>
+<div>
+<label>सयंत्र</label>
+<select id="machine">
+<option value="">सयंत्र निवडा</option>
+</select>
+</div>
 
+<div>
+<label>पासून दिनांक</label>
 <input type="date" id="fromDate">
+</div>
 
+<div>
+<label>पर्यंत दिनांक</label>
 <input type="date" id="toDate">
+</div>
 
-<button onclick="loadPerformance()">Load</button>
+<div>
+<button onclick="loadPerformance()">विश्लेषण पहा</button>
+</div>
 
 </div>
+
+<div id="loader" class="loader">डेटा लोड होत आहे...</div>
 
 <!-- CARDS -->
 
@@ -230,12 +265,8 @@ box-shadow:0 2px 6px rgba(0,0,0,0.08);
 
 </div>
 
-<!-- CHART -->
-
 <div class="chart-box">
-
 <canvas id="effChart"></canvas>
-
 </div>
 
 </div>
@@ -248,12 +279,12 @@ let machines=[];
 let subs=[];
 let chart;
 
-/* LOAD CONFIG */
+/* CONFIG LOAD */
 
 async function loadConfig(){
 
-const r=await fetch(API+"?mode=config_all");
-const data=await r.json();
+const res=await fetch(API+"?mode=config_all");
+const data=await res.json();
 
 machines=data.machines;
 subs=data.subdivisions;
@@ -276,7 +307,7 @@ setDefaultDates();
 
 }
 
-/* DEFAULT DATE */
+/* DEFAULT DATES */
 
 function setDefaultDates(){
 
@@ -284,11 +315,8 @@ const today=new Date();
 
 const first=new Date(today.getFullYear(),today.getMonth(),1);
 
-document.getElementById("fromDate").value=
-first.toISOString().split("T")[0];
-
-document.getElementById("toDate").value=
-today.toISOString().split("T")[0];
+fromDate.value=first.toISOString().split("T")[0];
+toDate.value=today.toISOString().split("T")[0];
 
 }
 
@@ -297,7 +325,8 @@ today.toISOString().split("T")[0];
 function loadCategory(){
 
 const catSel=document.getElementById("category");
-catSel.innerHTML="";
+
+catSel.innerHTML='<option value="">प्रकार निवडा</option>';
 
 ["Machine","Vehicle"].forEach(c=>{
 
@@ -318,11 +347,12 @@ loadMachines();
 
 function loadMachines(){
 
-const sub=document.getElementById("subdivision").value;
-const cat=document.getElementById("category").value;
+const sub=subdivision.value;
+const cat=category.value;
 
 const mSel=document.getElementById("machine");
-mSel.innerHTML="";
+
+mSel.innerHTML='<option value="">सयंत्र निवडा</option>';
 
 machines
 .filter(m=>m["Subdivision Code"]===sub && m["Category"]===cat)
@@ -343,97 +373,106 @@ mSel.appendChild(op);
 
 async function loadPerformance(){
 
-const sub=document.getElementById("subdivision").value;
-const machine=document.getElementById("machine").value;
+const sub=subdivision.value;
+const machine=machineSelect();
 
-const fromDate=document.getElementById("fromDate").value;
-const toDate=document.getElementById("toDate").value;
+const from=fromDate.value;
+const to=toDate.value;
 
-if(!fromDate || !toDate){
-
-alert("Date range select करा");
+if(!sub || !machine){
+alert("कृपया उपविभाग व सयंत्र निवडा");
 return;
-
 }
 
-const r=await fetch(
-API+"?mode=fuel_dashboard&subdivision="+sub+
-"&from="+fromDate+
-"&to="+toDate
+loader.style.display="block";
+
+const res=await fetch(API+
+"?mode=fuel_dashboard&subdivision="+sub+
+"&from="+from+
+"&to="+to
 );
 
-const data=await r.json();
+const data=await res.json();
+
+loader.style.display="none";
 
 const row=data.find(d=>d.machine===machine);
 
-if(!row)return;
+if(!row){
+alert("डेटा उपलब्ध नाही");
+return;
+}
 
-const hours=row.hours;
-const diesel=row.diesel;
-const actual=row.actual;
-const expected=row.expected;
+updateCards(row);
+drawChart(row);
 
-document.getElementById("expected").innerText=expected.toFixed(2);
-document.getElementById("actual").innerText=actual.toFixed(2);
-document.getElementById("hours").innerText=hours.toFixed(1);
-document.getElementById("diesel").innerText=diesel.toFixed(1);
+}
 
-/* STATUS */
+/* CARD UPDATE */
+
+function updateCards(row){
+
+expected.innerText=row.expected.toFixed(2);
+actual.innerText=row.actual.toFixed(2);
+hours.innerText=row.hours.toFixed(1);
+diesel.innerText=row.diesel.toFixed(1);
 
 let status="good";
 let txt="Good";
 
 if(row.category==="Machine"){
 
-if(actual>expected*1.1){status="bad";txt="High";}
-else if(actual>expected){status="warn";txt="Slight High";}
+if(row.actual>row.expected*1.1){status="bad";txt="High";}
+else if(row.actual>row.expected){status="warn";txt="Slight High";}
 
 }else{
 
-if(actual<expected*0.9){status="bad";txt="Poor";}
-else if(actual<expected){status="warn";txt="Low";}
+if(row.actual<row.expected*0.9){status="bad";txt="Poor";}
+else if(row.actual<row.expected){status="warn";txt="Low";}
 
 }
 
-const st=document.getElementById("status");
+statusEl.innerText=txt;
+statusEl.className=status;
 
-st.innerText=txt;
-st.className=status;
+}
 
 /* CHART */
 
-if(chart){
-chart.destroy();
-}
+function drawChart(row){
 
-chart=new Chart(document.getElementById("effChart"),{
+if(chart) chart.destroy();
+
+chart=new Chart(effChart,{
 
 type:"bar",
 
 data:{
 labels:["Expected","Actual"],
 datasets:[{
-label:"Fuel Efficiency",
-data:[expected,actual],
-borderWidth:2
+data:[row.expected,row.actual],
+backgroundColor:["#1e40af","#60a5fa"]
 }]
 },
 
 options:{
-responsive:true,
-plugins:{
-legend:{display:false}
-}
+plugins:{legend:{display:false}},
+responsive:true
 }
 
 });
 
 }
 
-/* EVENTS */
+function machineSelect(){
+return document.getElementById("machine").value;
+}
 
-document.getElementById("subdivision").onchange=loadMachines;
-document.getElementById("category").onchange=loadMachines;
+const statusEl=document.getElementById("status");
+const loader=document.getElementById("loader");
+
+subdivision.onchange=loadMachines;
+category.onchange=loadMachines;
 
 loadConfig();
 
