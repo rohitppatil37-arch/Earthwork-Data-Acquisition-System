@@ -412,11 +412,12 @@ return;
 
 const url = API_URL +
   "?mode=report" +
-  "&type=" + (type === "machine" ? "pdf" : type) +  // ← ही line replace करा
+  "&type=" + type +           // ← ही line replace केली!
   "&from=" + from +
   "&to=" + to +
   "&subdivision=" + sub +
   "&token=" + token;
+
 
 
 fetch(url)
