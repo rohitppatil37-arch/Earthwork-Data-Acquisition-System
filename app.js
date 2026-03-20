@@ -441,7 +441,17 @@ function resetSelect(selectElement, placeholder) {
   selectElement.innerHTML = "";
   addOption(selectElement, "", placeholder);
 }
+// ===============================
+// 🎙️ STOP VOICE ON RESET
+// ===============================
+getEl("mainForm")?.addEventListener("reset", () => {
+  if(recognition && isRecording){
+    recognition.stop();
+  }
 
+  const status = getEl("voiceStatus");
+  if(status) status.innerText = "";
+});
 function addOption(selectElement, value, text) {
   if (!selectElement) return;
   const opt = document.createElement("option");
@@ -601,7 +611,8 @@ function initVoiceInput(){
   const btn = getEl("micBtn");
   const input = getEl("locationFromTo");
   const status = getEl("voiceStatus");
-
+if(btn?.dataset.voiceInit === "true") return;
+if(btn) btn.dataset.voiceInit = "true";
   // element exist नाही तर skip
   if(!btn || !input) return;
 
@@ -630,13 +641,14 @@ function initVoiceInput(){
   // ✅ RESULT
   recognition.onresult = (event) => {
 
-    const text = event.results[0][0].transcript.trim();
+  const text = event.results[0][0].transcript.trim();
 
-    // 👉 ONLY fill location (NO parsing)
-    input.value = text;
+  input.value = text;
 
-    if(status) status.innerText = "✅ झाले";
-  };
+  if(status) status.innerText = "✅ झाले";
+
+  input.focus(); // ✅ ADD THIS
+};
 
   // ❌ ERROR
   recognition.onerror = () => {
