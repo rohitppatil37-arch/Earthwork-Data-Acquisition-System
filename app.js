@@ -31,7 +31,15 @@ async function initApp() {
 
 // 👇 ADD THIS
 initVoiceInput();
-    
+  // 👇 ADD THIS
+getEl("mainForm")?.addEventListener("reset", () => {
+  if(recognition && isRecording){
+    recognition.stop();
+  }
+
+  const status = getEl("voiceStatus");
+  if(status) status.innerText = "";
+});  
   } catch (err) {
 
     console.error("❌ INIT FAILED:", err);
@@ -599,12 +607,15 @@ let isRecording = false;
 function initVoiceInput(){
 
   const btn = getEl("micBtn");
-  const input = getEl("locationFromTo");
-  const status = getEl("voiceStatus");
-if(btn?.dataset.voiceInit === "true") return;
-if(btn) btn.dataset.voiceInit = "true";
-  // element exist नाही तर skip
-  if(!btn || !input) return;
+const input = getEl("locationFromTo");
+const status = getEl("voiceStatus");
+
+// 👇 FIRST this
+if(!btn || !input) return;
+
+// 👇 THEN this
+if(btn.dataset.voiceInit === "true") return;
+btn.dataset.voiceInit = "true";
 
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
