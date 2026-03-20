@@ -441,9 +441,10 @@ function resetSelect(selectElement, placeholder) {
   selectElement.innerHTML = "";
   addOption(selectElement, "", placeholder);
 }
-// ===============================
-// 🎙️ STOP VOICE ON RESET
-// ===============================
+attachEventListeners();
+initVoiceInput();
+
+// 👇 ADD HERE
 getEl("mainForm")?.addEventListener("reset", () => {
   if(recognition && isRecording){
     recognition.stop();
@@ -452,6 +453,7 @@ getEl("mainForm")?.addEventListener("reset", () => {
   const status = getEl("voiceStatus");
   if(status) status.innerText = "";
 });
+
 function addOption(selectElement, value, text) {
   if (!selectElement) return;
   const opt = document.createElement("option");
