@@ -442,16 +442,6 @@ function resetSelect(selectElement, placeholder) {
   addOption(selectElement, "", placeholder);
 }
 
-// 👇 ADD HERE
-getEl("mainForm")?.addEventListener("reset", () => {
-  if(recognition && isRecording){
-    recognition.stop();
-  }
-
-  const status = getEl("voiceStatus");
-  if(status) status.innerText = "";
-});
-
 function addOption(selectElement, value, text) {
   if (!selectElement) return;
   const opt = document.createElement("option");
