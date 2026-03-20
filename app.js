@@ -28,7 +28,7 @@ async function initApp() {
     handleDieselLogic();
 
     attachEventListeners();
-
+initVoiceInput();
   } catch (err) {
 
     console.error("❌ INIT FAILED:", err);
@@ -585,4 +585,82 @@ if (timeToMinutes(shift2End) <= timeToMinutes(shift2Start)) {
 // ✅ If everything valid
 closeErrorBox();
 return true;
+}
+let recognition = null;
+let isRecording = false;
+
+function initVoiceInput(){
+
+  const btn = getEl("micBtn");
+  const input = getEl("locationFromTo");
+  const status = getEl("voiceStatus");
+
+  if(!btn || !input) return;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if(!SpeechRecognition){
+    if(status) status.innerText = "❌ Voice support नाही";
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+
+  recognition.lang = "hi-IN"; // best for mixed speech
+  recognition.interimResults = false;
+  recognition.continuous = false;
+
+  // 🎤 START
+  recognition.onstart = () => {
+    isRecording = true;
+    btn.classList.add("recording");
+    if(status) status.innerText = "🎤 बोला...";
+  };
+
+  // ✅ RESULT
+  recognition.onresult = (event) => {
+
+    const text = event.results[0][0].transcript.trim();
+
+    // 👉 NO parsing, NO formatting
+    input.value = text;
+
+    if(status) status.innerText = "✅ झाले";
+  };
+
+  // ❌ ERROR
+  recognition.onerror = () => {
+    if(status) status.innerText = "❌ पुन्हा प्रयत्न करा";
+  };
+
+  // ⏹ END
+  recognition.onend = () => {
+    isRecording = false;
+    btn.classList.remove("recording");
+  };
+
+  // 🎯 CLICK
+  btn.addEventListener("click", () => {
+
+    const vehicleVisible =
+      getEl("vehicleSection") &&
+      getEl("vehicleSection").offsetParent !== null;
+
+    if(!vehicleVisible){
+      if(status) status.innerText = "⚠️ फक्त वाहनासाठी वापरा";
+      return;
+    }
+
+    if(isRecording){
+      recognition.stop();
+    } else {
+      try{
+        recognition.start();
+      }catch(e){
+        console.log(e);
+      }
+    }
+
+  });
+
 }
